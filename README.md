@@ -1,218 +1,144 @@
-# Colour-game
+# daddy moon 
+
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Ultimate 5 Second Color Challenge</title>
+<title>Daddy Moon - Play Free Color Challenge Game Online</title>
+
+<meta name="description" content="Daddy Moon is a free online color challenge game. Play daily challenge, beat leaderboard and share with friends.">
 
 <style>
 body{
 margin:0;
 font-family:Arial, sans-serif;
-text-align:center;
-background:linear-gradient(135deg,#ff512f,#dd2476);
+background:#0f0f1a;
 color:white;
+text-align:center;
 }
 
-header{
-background:black;
-padding:15px;
-font-size:22px;
-font-weight:bold;
-}
-
-.container{
-padding:20px;
-}
-
-button{
-padding:12px 20px;
-margin:8px;
-font-size:16px;
-border:none;
-border-radius:10px;
-cursor:pointer;
-transition:0.3s;
-}
-
-button:hover{
-transform:scale(1.05);
-}
-
-.color-btn{
-width:40%;
-}
-
-#timer{
-font-size:20px;
-margin:10px;
-}
-
-#leaderboard{
-background:rgba(0,0,0,0.4);
-padding:15px;
-border-radius:12px;
+h1{
+color:#00e0ff;
 margin-top:20px;
 }
 
-#adBox{
-display:none;
-background:white;
-color:black;
-padding:20px;
-position:fixed;
-top:50%;
-left:50%;
-transform:translate(-50%,-50%);
+#colorBox{
+width:200px;
+height:200px;
+margin:20px auto;
 border-radius:15px;
-width:80%;
-max-width:300px;
+box-shadow:0 0 20px #00e0ff;
 }
 
-input{
-padding:10px;
-border-radius:8px;
+button{
+padding:10px 20px;
+margin:8px;
 border:none;
-margin:10px;
-width:80%;
+border-radius:8px;
+background:#00e0ff;
+color:black;
+font-weight:bold;
+cursor:pointer;
 }
 
+button:hover{
+background:#00b3cc;
+}
+
+#leaderboard{
+margin-top:20px;
+}
+
+footer{
+margin-top:30px;
+font-size:14px;
+opacity:0.7;
+}
 </style>
 </head>
 
 <body>
 
-<header>🔥 Ultimate Color Challenge 🔥</header>
+<h1>🌙 Daddy Moon Color Challenge</h1>
+<p>Guess the correct color before time ends!</p>
 
-<div class="container">
+<div id="colorBox"></div>
 
-<input type="text" id="username" placeholder="Enter Your Name">
+<div id="options"></div>
 
-<h2 id="colorText">Press Start</h2>
-<div id="timer">Time: 5</div>
+<h2 id="score">Score: 0</h2>
+<h3 id="timer">Time: 30</h3>
 
-<div>
-<button class="color-btn" style="background:red;color:white;" onclick="check('Red')">Red</button>
-<button class="color-btn" style="background:green;color:white;" onclick="check('Green')">Green</button><br>
-<button class="color-btn" style="background:blue;color:white;" onclick="check('Blue')">Blue</button>
-<button class="color-btn" style="background:yellow;color:black;" onclick="check('Yellow')">Yellow</button>
-</div>
-
-<h2>Score: <span id="score">0</span></h2>
-
-<button onclick="startGame()">Start Game</button>
-<button onclick="shareScore()">Share</button>
+<button onclick="shareScore()">Share Score</button>
 
 <div id="leaderboard">
-<h3>🏆 Leaderboard</h3>
-<ul id="topScores"></ul>
+<h3>🏆 Top Score</h3>
+<p id="topScore">0</p>
 </div>
 
-</div>
-
-<div id="adBox">
-<h3>Advertisement</h3>
-<p>Your Ad Code Here</p>
-<button onclick="closeAd()">Close</button>
-<button onclick="continueGame()">Continue (+Ad)</button>
-</div>
-
-<audio id="winSound" src="https://www.soundjay.com/buttons/sounds/button-3.mp3"></audio>
-<audio id="loseSound" src="https://www.soundjay.com/buttons/sounds/button-10.mp3"></audio>
+<footer>
+© 2026 Daddy Moon | Free Online Color Game
+</footer>
 
 <script>
 
-let colors=["Red","Green","Blue","Yellow"];
-let currentColor="";
-let score=0;
-let timeLeft=5;
-let timer;
+let score = 0;
+let timeLeft = 30;
+let topScore = localStorage.getItem("topScore") || 0;
 
-function startGame(){
-let name=document.getElementById("username").value;
-if(name==""){
-alert("Enter Your Name First!");
-return;
-}
-score=0;
-document.getElementById("score").innerHTML=score;
-nextRound();
-}
+document.getElementById("topScore").innerText = topScore;
 
-function nextRound(){
-timeLeft=5;
-document.getElementById("timer").innerHTML="Time: "+timeLeft;
-currentColor=colors[Math.floor(Math.random()*colors.length)];
-document.getElementById("colorText").innerHTML=currentColor;
+const colors = ["red","blue","green","yellow","purple","orange","pink"];
 
-clearInterval(timer);
-timer=setInterval(function(){
+function startTimer(){
+setInterval(()=>{
 timeLeft--;
-document.getElementById("timer").innerHTML="Time: "+timeLeft;
+document.getElementById("timer").innerText="Time: "+timeLeft;
+
 if(timeLeft<=0){
-clearInterval(timer);
-gameOver();
+if(score>topScore){
+localStorage.setItem("topScore",score);
 }
+alert("Game Over! Your Score: "+score);
+location.reload();
+}
+
 },1000);
 }
 
-function check(choice){
-if(choice===currentColor){
-score+=10;
-document.getElementById("score").innerHTML=score;
-document.getElementById("winSound").play();
-nextRound();
-}else{
-document.getElementById("loseSound").play();
-clearInterval(timer);
-gameOver();
-}
-}
+function newGame(){
+const randomColor = colors[Math.floor(Math.random()*colors.length)];
+document.getElementById("colorBox").style.background=randomColor;
 
-function gameOver(){
-saveScore();
-document.getElementById("adBox").style.display="block";
-}
+let shuffled = [...colors].sort(()=>0.5-Math.random()).slice(0,4);
 
-function closeAd(){
-document.getElementById("adBox").style.display="none";
-}
-
-function continueGame(){
-document.getElementById("adBox").style.display="none";
-nextRound();
-}
-
-function saveScore(){
-let name=document.getElementById("username").value;
-let scores=JSON.parse(localStorage.getItem("scores"))||[];
-scores.push({name:name,score:score});
-scores.sort((a,b)=>b.score-a.score);
-scores=scores.slice(0,5);
-localStorage.setItem("scores",JSON.stringify(scores));
-displayScores();
-}
-
-function displayScores(){
-let scores=JSON.parse(localStorage.getItem("scores"))||[];
-let list=document.getElementById("topScores");
-list.innerHTML="";
-scores.forEach(s=>{
-let li=document.createElement("li");
-li.innerText=s.name+" - "+s.score;
-list.appendChild(li);
+let optionsHTML="";
+shuffled.forEach(color=>{
+optionsHTML+=`<button onclick="check('${color}','${randomColor}')">${color}</button>`;
 });
+
+document.getElementById("options").innerHTML=optionsHTML;
+}
+
+function check(selected,correct){
+if(selected===correct){
+score+=10;
+document.getElementById("score").innerText="Score: "+score;
+}
+newGame();
 }
 
 function shareScore(){
-let text="I scored "+score+" in Ultimate Color Challenge!";
-navigator.clipboard.writeText(text);
-alert("Score Copied! Share with friends.");
+let text = "I scored "+score+" points in Daddy Moon 🌙🔥 Can you beat me? Play now!";
+window.open("https://wa.me/?text="+encodeURIComponent(text));
 }
 
-displayScores();
+startTimer();
+newGame();
 
 </script>
 
 </body>
 </html>
+
